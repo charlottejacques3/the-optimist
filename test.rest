@@ -1,0 +1,6 @@
+POST http://127.0.0.1:54321/functions/v1/call_claude
+Content-Type: application/json
+
+{ "input":"Hello Claude" }
+
+###
