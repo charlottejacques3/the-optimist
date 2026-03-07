@@ -13,14 +13,24 @@ Deno.serve(async (req) => {
     const client = new Anthropic({ apiKey: Deno.env.get('ANTHROPIC_API_KEY')! });
     console.log("Input:", input);
 
-    const message = await client.messages.create({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 1024,
-      messages: [
-        { role: "user", content: input }
-      ],
-    });
+    const message = await client.messages
+      .create({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1024,
+        messages: [
+          { role: "user", content: input }
+        ],
+      })
+      .catch(async (error) => {
+        if (error instanceof Anthropic.APIError) {
+          const errorDetails = await error.response.json();
+          console.log("API Error:", errorDetails);
+        } else {
+          throw error;
+        }
+      });
 
+    console.log("Message response:", message);
     const text = message.content[0].text;
     console.log(text);
 
