@@ -77,7 +77,7 @@ const Homepage = () => {
           {/* Pink Card — opens modal */}
           <button
             onClick={() => setProfileOpen(true)}
-            className="bg-pink-400 border-4 border-black rounded-2xl px-4 py-3 shadow-[6px_6px_0px_black] flex items-center gap-4 text-left hover:translate-y-[-2px] transition-transform"
+            className="bg-pink-400 border-4 cursor-pointer border-black rounded-2xl px-4 py-3 shadow-[6px_6px_0px_black] flex items-center gap-4 text-left hover:translate-y-[-2px] transition-transform"
           ><img src={ada} alt= " dancing" className="w-14 h-14 object-cover border-2 border-black rounded-lg shrink-0"/>
             <div>
               <p className="font-bold text-black text-3xl">Ada Lovelace</p>
@@ -87,7 +87,7 @@ const Homepage = () => {
           {/* Weird Fact Card — opens modal */}
           <button
             onClick={() => setFactOpen(true)}
-            className=" border-4 border-black rounded-2xl px-4 py-3 shadow-[6px_6px_0px_black] flex items-center gap-4 text-left hover:translate-y-[-2px] transition-transform"
+            className=" border-4 border-black cursor-pointer rounded-2xl px-4 py-3 shadow-[6px_6px_0px_black] flex items-center gap-4 text-left hover:translate-y-[-2px] transition-transform"
           ><img src={dancing} alt= " dancing" className="w-14 h-14 object-cover border-2 border-black rounded-lg shrink-0"/>
             <p className="text-black font-bold text-3xl">Strange Historical Fact</p>
             <p className="text-black text-xl">The Dancing Plague of 1518</p>
@@ -126,7 +126,7 @@ const Homepage = () => {
             and apparently unwillingly for days on end. The mania lasted for about two months
             before ending as mysteriously as it began.
           </p>
-          <a href= {link} className="block-cursor pointer">
+          <a href= {link} >
           <strong className="text-sm">Read More</strong>
           </a>
         </div>
