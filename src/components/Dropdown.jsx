@@ -1,0 +1,55 @@
+import React, { useState } from "react";
+import { Menu } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
+const DropDown = () => {
+  const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
+
+  return (
+    <div className="relative inline-block text-left">
+      <button
+        type="button"
+        className="p-2 rounded-full border-2 border-black hover:bg-black/10 transition-colors focus:outline-none"
+        id="menu-button"
+        aria-expanded={open}
+        aria-haspopup="true"
+        onClick={() => setOpen(!open)}
+      >
+        <Menu size={28} color="black" />
+      </button>
+
+      {open && (
+        <div
+          className="w-48 absolute right-0 z-10 mt-2 origin-top-right bg-white shadow-[2px_2px_0px_rgba(0,0,0,1)] border-black border-2 divide-y divide-black"
+          role="menu"
+          aria-orientation="vertical"
+          aria-labelledby="menu-button"
+        >
+          <div role="none">
+            <button
+              onClick={() => navigate("/settings")}
+              className="block w-full text-left px-4 py-2 text-sm border-black border-b-2 hover:bg-[#B8FF9F] hover:font-medium"
+            >
+              Profile
+            </button>
+            <button
+              onClick={() => navigate("/login")}
+              className="block w-full text-left px-4 py-2 text-sm border-black border-b-2 hover:bg-[#B8FF9F] hover:font-medium"
+            >
+              Settings
+            </button>
+            <button
+              onClick={() => navigate("/login")}
+              className="block w-full text-left px-4 py-2 text-sm hover:bg-[#B8FF9F] hover:font-medium"
+            >
+              Sign out
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default DropDown;
