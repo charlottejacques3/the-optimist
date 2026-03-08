@@ -1,5 +1,4 @@
 
-/*import { createClient } from "@supabase/supabase-js";*/
 import {
   Navigate,
   BrowserRouter as Router,
@@ -9,10 +8,7 @@ import {
 
 import Homepage from "./Homepage";
 import LandingPage from "./LandingPage";
-{/*const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY,
-);*/}
+
 
 function App() {
   const username = "Test User";
