@@ -1,10 +1,17 @@
 import React, { useState } from "react";
 import { Menu } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../supabaseClient";
 
 const DropDown = () => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    console.log('logout')
+    navigate("/");
+  }
 
   return (
     <div className="relative inline-block text-left">
@@ -40,7 +47,7 @@ const DropDown = () => {
               Settings
             </button>
             <button
-              onClick={() => navigate("/login")}
+              onClick={handleLogout}
               className="block w-full text-left px-4 py-2 text-sm hover:bg-[#B8FF9F] hover:font-medium"
             >
               Sign out
