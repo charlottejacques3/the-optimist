@@ -1,59 +1,120 @@
-import React from "react";
+import React,{useState} from "react";
 import Header from "./components/Header";
+import NewsCard from "./components/NewsCard";
 
+const Modal = ({ isOpen, onClose, children }) => {
+  if (!isOpen) return null;
+  return (
+    <div
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+      onClick={onClose}
+    >
+      <div
+        className="bg-[#e8e0c8] border-4 border-black rounded-2xl p-6 shadow-[8px_8px_0px_black] max-w-md w-full mx-4"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          onClick={onClose}
+          className="float-right bg-black text-white rounded-full w-8 h-8 font-bold text-lg leading-none mb-2"
+        >
+          ×
+        </button>
+        {children}
+      </div>
+    </div>
+  );
+};
+const articles = [
+  {
+    imageUrl: null,
+    date: "May 15th, 2023",
+    headline:
+      "Optimism on the Rise: Global Survey Shows 70% of People Feeling More Positive",
+    body: "A recent global survey conducted by the World Happiness Institute has revealed a significant increase in optimism among people worldwide. The survey, which polled over 100,000 individuals across 50 countries, found that 70% of respondents reported feeling more positive about the future compared to previous years. Experts attribute this rise in optimism to various factors, including advancements in technology, increased access to information, and a growing focus on mental health and well-being. The survey also highlighted that younger generations are particularly optimistic, with 80% of respondents aged 18-30 expressing a positive outlook on life. This trend towards optimism is seen as a hopeful sign for the future, suggesting that people are finding reasons to be hopeful despite ongoing global challenges.",
+  },
+  {
+    imageUrl: null,
+    date: "June 2nd, 2023",
+    headline: "New Study Finds That Optimism Can Boost Immune System Function",
+    body: "A groundbreaking study published in the Journal of Psychoneuroimmunology has found that optimism can have a significant impact on immune system function. The study, conducted by researchers at the University of California, involved a group of 200 participants who were assessed for their levels of optimism using a standardized questionnaire. The participants were then exposed to a common cold virus and monitored for symptoms and immune response. The results showed that those with higher levels of optimism had a stronger immune response, with increased production of antibodies and a shorter duration of symptoms compared to those with lower levels of optimism. The researchers suggest that optimism may help reduce stress and inflammation in the body, which can enhance immune function. This study adds to the growing body of evidence supporting the idea that a positive mindset can have tangible health benefits.",
+  },
+];
 const Homepage = () => {
+    const [profileOpen, setProfileOpen] = useState(false);
+    const [factOpen, setFactOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-teal-400 font-sans">
-        <Header />
-              {/* Header 
-      <div className="bg-[#e8e0c8] px-6 py-3 flex items-center justify-between border-b-4 border-black">
-        <div>
-          <p className="text-sm font-medium text-black">The</p>
-          <h1 className="text-4xl font-bold font-serif text-black italic leading-tight">Optimist</h1>
-          <p className="text-sm italic text-black">The world isn't all bad</p>
-        </div>
-        <div className="flex items-center gap-4">
-          <div className="bg-yellow-300 border-2 border-black rounded-full px-16 py-2 h-10 w-64" />
-          <button className="bg-pink-400 border-2 border-black rounded-full w-14 h-14 text-xs font-bold text-black leading-tight">
-            SIGN<br />IN
-          </button>
-        </div>
-      </div>*/}
+      <Header />
 
-      {/* Body */}
+      {/* Body — 2/3 + 1/3 split */}
       <div className="flex gap-6 p-6">
-        {/* Main Card */}
-        <div className="bg-[#e8e0c8] border-4 border-black rounded-2xl p-4 flex-1 shadow-[6px_6px_0px_black]">
-          <div className="bg-teal-400 border-2 border-black rounded-lg h-48 w-full mb-4" />
-          <h2 className="text-4xl font-bold text-black mb-2">Headline</h2>
-          <p className="text-sm text-black">body text here</p>
+
+        {/* Main Column — 2/3 */}
+        <div className="flex flex-col gap-4 w-2/3">
+          {articles.map((article, i) => (
+            <NewsCard
+              key={i}
+              image={article.image}
+              headline={article.headline}
+              body={article.body}
+            />
+          ))}
         </div>
 
-        {/* Sidebar */}
-        <div className="flex flex-col gap-4 w-72">
-          {/* Streak */}
+        {/* Sidebar — 1/3 */}
+        <div className="flex flex-col gap-4 w-1/3">
+
+      {/* Streak */}
           <div className="bg-[#e8e0c8] border-4 border-black rounded-2xl px-6 py-4 shadow-[6px_6px_0px_black] flex items-center justify-center">
             <span className="text-5xl font-bold text-black font-serif">Streak</span>
           </div>
 
-          {/* Pink Card */}
-          <div className="bg-pink-400 border-4 border-black rounded-2xl px-4 py-3 shadow-[6px_6px_0px_black] flex items-center gap-4">
-            <div className="bg-teal-400 border-2 border-black rounded-lg w-14 h-14 flex-shrink-0" />
+          {/* Pink Card — opens modal */}
+          <button
+            onClick={() => setProfileOpen(true)}
+            className="bg-pink-400 border-4 border-black rounded-2xl px-4 py-3 shadow-[6px_6px_0px_black] flex items-center gap-4 text-left hover:translate-y-[-2px] transition-transform"
+          >
+            <div className="bg-teal-400 border-2 border-black rounded-lg w-14 h-14 shrink-0" />
             <div>
               <p className="font-bold text-black text-sm">{"{Name}"}</p>
               <p className="text-black text-sm">infoinfoinfo</p>
             </div>
-          </div>
+          </button>
 
-          {/* Blue Card */}
-          <div className="bg-blue-700 border-4 border-black rounded-2xl px-4 py-3 shadow-[6px_6px_0px_black] flex items-center gap-4">
-            <div className="bg-teal-400 border-2 border-black rounded-lg w-14 h-14 flex-shrink-0" />
+          {/* Weird Fact Card — opens modal */}
+          <button
+            onClick={() => setFactOpen(true)}
+            className="bg-blue-700 border-4 border-black rounded-2xl px-4 py-3 shadow-[6px_6px_0px_black] flex items-center gap-4 text-left hover:translate-y-[-2px] transition-transform"
+          >
+            <div className="bg-teal-400 border-2 border-black rounded-lg w-14 h-14 shrink-0" />
             <p className="text-white font-bold text-sm">Weird Fact</p>
+          </button>
+        </div>
+        </div>
+      {/* Profile Modal */}
+      <Modal isOpen={profileOpen} onClose={() => setProfileOpen(false)}>
+        <div className="flex items-center gap-4 mb-4">
+          <div className="bg-teal-400 border-2 border-black rounded-lg w-20 h-20 shrink-0" />
+          <div>
+            <h3 className="text-2xl font-bold text-black">{"{Name}"}</h3>
+            <p className="text-black text-sm">Extended profile info goes here.</p>
           </div>
         </div>
-      </div>
+        <p className="text-black text-sm">More details, stats, or content for this person.</p>
+      </Modal>
+
+      {/* Weird Fact Modal */}
+      <Modal isOpen={factOpen} onClose={() => setFactOpen(false)}>
+        <h3 className="text-2xl font-bold text-black mb-3">🤯 Weird History Fact</h3>
+        <p className="text-black text-sm leading-relaxed">
+          Your weird fact content goes here. Replace this with whatever surprising historical
+          tidbit you want to surface to readers today.
+        </p>
+      </Modal>
     </div>
   );
-}
+};
+
 
 export default Homepage;

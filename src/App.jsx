@@ -8,12 +8,14 @@ import {
 } from "react-router-dom";
 
 import Homepage from "./Homepage";
+import LandingPage from "./LandingPage";
 {/*const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
   import.meta.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY,
 );*/}
 
 function App() {
+  const username = "Test User";
   {
     /* const [count, setCount] = useState(0);
   const [claudeResponse, setClaudeResponse] = useState(null);
@@ -35,7 +37,7 @@ function App() {
     <Router>
       {/* Define routes */}
       <Routes>
-        <Route path="/" element={<Navigate to="/home" />} />
+        <Route path="/" element={<LandingPage username={username} />} />
         <Route path="/home" element={<Homepage />} />
       </Routes>
       {/*<div

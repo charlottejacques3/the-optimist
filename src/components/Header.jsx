@@ -6,18 +6,16 @@ const Header = () => {
 
   return (
     <div
-      className="flex items-center justify-between px-6 py-3"
+      className="flex border-3 border-black items-center justify-between px-10 py-4 margin-bottom-5"
       style={{ backgroundColor: "#f5f0e0" }}
     >
       {/* Left - Logo */}
       <div>
-        <p className="text-black text-xs font-['Berkshire_Swash']">The</p>
-        <h1
-          className="text-black text-2xl font-['Berkshire_Swash'] font-bold italic"
-        >
+        <p className="text-black text-3xl font-['Berkshire_Swash']">The</p>
+        <h1 className="text-black text-7xl font-['Berkshire_Swash'] font-bold italic">
           Optimist
         </h1>
-        <p className="text-black font-['Glass_Antiqua'] text-xs italic">
+        <p className="text-black font-['Glass_Antiqua'] text-5xl italic">
           The world isn't all bad
         </p>
       </div>
