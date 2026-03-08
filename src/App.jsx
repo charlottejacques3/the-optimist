@@ -20,6 +20,7 @@ function App() {;
   // Check for existing session using getClaims
     supabase.auth.getClaims().then(({ data: { claims } }) => {
         setClaims(claims);
+        console.log(claims.sub);
     });
 
     // Listen for auth changes

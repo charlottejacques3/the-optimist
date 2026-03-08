@@ -4,6 +4,7 @@ import Anthropic from "npm:@anthropic-ai/sdk";
 import { callNewsAPI, getAllKeywords, moreKeywords } from "./news_api.js";
 import { callArticleSearch } from "./call_search.js";
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { cleanJson } from "../parse_json.js";
 
 console.log("Hello from Functions!");
 const supabase = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SB_PUBLISHABLE_KEY')!);
@@ -48,6 +49,13 @@ Deno.serve(async (req) => {
     const { keywords } = await req.json();
     const client = new Anthropic({ apiKey: Deno.env.get('ANTHROPIC_API_KEY')! });
 
+    const authHeader = req.headers.get('Authorization')!
+    const token = authHeader.replace('Bearer ', '')
+    console.log(token);
+    let { data, error } = await supabase.auth.getUser(token);
+    const uid = data.user.id;
+    console.log(uid);
+
     const messages = [{ 
       role: "user", 
       content: `Call News API with the following keywords: ${keywords}` 
@@ -60,11 +68,10 @@ Deno.serve(async (req) => {
 
     const stepInstructions = {
       1: `Call the article_search tool for EVERY SINGLE article URL returned. 
-      Do not batch, do not summarize, do not stop early. 
+      Do not batch, do not summarize, do not stop early. Do not return any text responses in between, only tool calls.
       You must call article_search once per URL before proceeding. 
       If the article cannot be accessed or does not contain enough text content, skip it and move on to the next one.
-      At the end, tell me how many articles you were able to retrieve content for and how many you had to skip.
-      These two numbers added together should equal the total number of URLs returned by the news_api tool.`,
+      The number of articles parsed + the number of articles skipped added together should equal the total number of URLs returned by the news_api tool.`,
       
       2: `Note: do not explain your work, only return JSON output as explained below. Never use markdown formatting, code blocks, or backticks. Return only raw, valid JSON with no preamble or explanation.
       
@@ -99,9 +106,6 @@ Deno.serve(async (req) => {
         //etc
       }
       `,
-      // Format the output as an array of article URLs, and ONLY include article URLs where the total score is greater than or equal to 8. Sort the array so that the articles with the highest score are listed first. At the end, trim the array to only contain the top three articles with the highest scores.`,
-
-      // 3: `You should now have a list of article URLs that are relevant to the topic and have a positive sentiment. Use the article search tool to read over the article again. Since the keyword search may not have yielded accurate results, read over the article to see whether it is relevant to the given keywords: ${keywords}. If the article is relevant, keep it in the list. If it is not relevant, remove it from the list. Keep going through this until you find five relevant articles. At this point, provide a final list of article URLs that are both relevant and have a positive sentiment.`
     }
 
     let iteration = 0;
@@ -134,24 +138,29 @@ Deno.serve(async (req) => {
       if (response.stop_reason !== "tool_use") {
         finalResponse = response.content.find(b => b.type === "text")?.text;
         if (finalResponse) {
-          // More flexible regex to handle various markdown formats
-          const cleaned = finalResponse
-            .replace(/^[\s]*```[\w]*\s*/gm, '')  // Remove opening fence with optional language tag
-            .replace(/```[\s]*$/gm, '')           // Remove closing fence
-            .trim();
-          try {
-            parsed = JSON.parse(cleaned);
-            console.log("Successfully parsed JSON:", parsed);
-          } catch (e) {
-            console.error("Failed to parse JSON. Raw content:", cleaned);
-            throw e;
-          }
+          parsed = cleanJson(finalResponse);
+          // const cleaned = finalResponse
+          //   .replace(/^[\s]*```[\w]*\s*/gm, '')
+          //   .replace(/```[\s]*$/gm, '')          
+          //   .trim();
+          // try {
+          //   parsed = JSON.parse(cleaned);
+          //   console.log("Successfully parsed JSON:", parsed);
+          // } catch (e) {
+          //   console.error("Failed to parse JSON. Raw content:", cleaned);
+          //   throw e;
+          // }
 
           // save to db
           console.log("here");
           if (parsed.articles && Array.isArray(parsed.articles)) {
             console.log(parsed.articles);
-            const { data, error } = await supabase.from('articles').insert(parsed.articles);
+
+            const articlesToInsert = parsed.articles.map((article) => ({
+              ...article,
+              user_id: uid, // associate the article with the user based on the uid
+            }));
+            const { data, error } = await supabase.from('articles').insert(articlesToInsert);
             if (error) {
               console.log(error.message);
             } else {
@@ -193,6 +202,74 @@ Deno.serve(async (req) => {
 
       messages.push({ role: "user", content: nextMessage });
     }
+
+
+    // // find historical figures
+    // const now = new Date();
+    // const dateString = now.toISOString().substring(5, 10);
+    // const historicalFigureResponse = await client.messages
+    //   .create({
+    //     model: "claude-haiku-4-5-20251001", //claude-sonnet-4-20250514",
+    //     max_tokens: 1024,
+    //     messages: [{
+    //       role: "user",
+    //       content:`Please find an underrepresented historical figure who has the following birthday in MM-DD format: ${dateString}. To qualify as an "underrepresented historical figure", a person must identify as at least one of the following:
+    //     - Woman
+    //     - Black, Indigenous, or person of colour
+    //     - LGBTQ+
+    //     - Disabled.
+    //     For the identified historical figure, please provide the following information in raw JSON format ONLY. Never use markdown formatting, code blocks, or backticks.
+    //     {
+    //       "name": <full name>, 
+    //       "birthdate": <their date of birth formatted as a text string (e.g. September 4th, 1950),
+    //       "summary": <3-4 sentence summary of their life, accomplishments, and legacy>,
+    //       "image": <an URL pointing to an image of them>"
+    //     }
+    //     `}],
+    //   })
+    //   .catch(async (error) => {
+    //     if (error instanceof Anthropic.APIError) {
+    //       const errorDetails = await error.response;
+    //       console.log("API Error:", error);
+    //     } else {
+    //       throw error;
+    //     }
+    //     return;
+    //   });
+    // // const historicalFigure = historicalFigureResponse.content.find(b => b.type === "text")?.text;
+    // console.log(historicalFigureResponse.content[0].text);
+    // const historicalFiguresJson = cleanJson(historicalFigureResponse.content[0].text);
+    // console.log(historicalFiguresJson);
+
+    // // find "this day in history"
+    // const dayInHistoryResponse = await client.messages
+    //   .create({
+    //     model: "claude-haiku-4-5-20251001", //claude-sonnet-4-20250514",
+    //     max_tokens: 1024,
+    //     messages: [{
+    //       role: "user",
+    //       content:`Please find an interesting, typically unknown historical event that occurred on this day in MM-DD format: ${dateString}.
+    //     For the identified historical event, please provide the following information in raw JSON format ONLY. Never use markdown formatting, code blocks, or backticks.
+    //     {
+    //       "event": <event name>, 
+    //       "date": <the date of the event formatted as a text string (e.g. September 4th, 1950),
+    //       "summary": <3-4 sentence summary of the event and its significance>,
+    //     }
+    //     `}],
+    //   })
+    //   .catch(async (error) => {
+    //     if (error instanceof Anthropic.APIError) {
+    //       const errorDetails = await error.response;
+    //       console.log("API Error:", error);
+    //     } else {
+    //       throw error;
+    //     }
+    //     return;
+    //   });
+
+    //   console.log(dayInHistoryResponse.content[0].text);
+    //   const dayInHistoryJson = cleanJson(dayInHistoryResponse.content[0].text);
+    //   console.log(dayInHistoryJson);
 
     return new Response(JSON.stringify(parsed), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

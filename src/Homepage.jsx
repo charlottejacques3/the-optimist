@@ -32,6 +32,17 @@ const Homepage = () => {
   const [factOpen, setFactOpen] = useState(false);
   const [articles, setArticles] = useState([]);
 
+  const callClaude = async () => {
+    const { data, error } = await supabase.functions.invoke('historical_figure', {
+      // body: { "keywords": ["rescue", "women's rights", "climate", "community"] } ,
+    });
+    if (error) {
+      console.error("Error calling function:", error);
+    } else {
+      console.log(data);
+    }
+  };
+
   useEffect(() => {
     const fetchArticles = async () => {
       let { data, error } = await supabase.from("articles").select("*");
@@ -45,6 +56,7 @@ const Homepage = () => {
   return (
     <div className="min-h-screen bg-teal-400 font-sans">
       <Header />
+      <button onClick={callClaude}>Call claude</button>
 
       {/* Body — 2/3 + 1/3 split */}
       <div className="flex gap-6 p-6">
