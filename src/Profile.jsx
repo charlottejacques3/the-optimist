@@ -4,9 +4,14 @@ import Header from "./components/Header";
 import { supabase } from "./supabaseClient";
 
 const topics = [
-  "animals", "climate", "human Rights", "women's rights",
-  "community ", "rescue ", "economics",
-  "cute stories"
+  "animals",
+  "climate",
+  "human Rights",
+  "women's rights",
+  "community ",
+  "rescue ",
+  "economics",
+  "cute stories",
 ];
 
 const Profile = () => {
@@ -21,8 +26,10 @@ const Profile = () => {
   useEffect(() => {
     const loadPreferences = async () => {
       setFetching(true);
-      const { data: { claims } } = await supabase.auth.getUser();
-      const userId = claims?.sub;
+      const {
+        data: { claims },
+      } = await supabase.auth.getUser();
+      const userId = claims?.id;
 
       if (!userId) {
         setFetching(false);
@@ -39,8 +46,12 @@ const Profile = () => {
         const saved = data.topics.split(",").filter(Boolean);
         setSelected(saved);
         setInitialTopics(saved);
+      } else {
+        // No preferences saved yet — default to first 5
+        const defaults = topics.slice(0, 5);
+        setSelected(defaults);
+        // Don't set initialTopics, so isUpdate stays false & hasChanges triggers
       }
-
       setFetching(false);
     };
 
@@ -55,14 +66,18 @@ const Profile = () => {
     });
   };
 
-  const hasChanges = JSON.stringify([...selected].sort()) !== JSON.stringify([...initialTopics].sort());
+  const hasChanges =
+    JSON.stringify([...selected].sort()) !==
+    JSON.stringify([...initialTopics].sort());
   const isUpdate = initialTopics.length > 0;
 
   const handleContinue = async () => {
     setLoading(true);
     setError(null);
 
-    const { data: { claims } } = await supabase.auth.getClaims();
+    const {
+      data: { claims },
+    } = await supabase.auth.getClaims();
     const userId = claims?.sub;
 
     if (!userId) {
@@ -74,8 +89,12 @@ const Profile = () => {
     const { error: supabaseError } = await supabase
       .from("preferences")
       .upsert(
-        { id: userId, topics: selected.join(","), updated_at: new Date().toISOString() },
-        { onConflict: "id" }
+        {
+          id: userId,
+          topics: selected.join(","),
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "id" },
       );
 
     if (supabaseError) {
@@ -97,7 +116,9 @@ const Profile = () => {
           <h2 className="text-3xl font-bold text-center mb-2">
             {isUpdate ? "Update Your Topics" : "Choose Your Topics"}
           </h2>
-          <p className="text-center text-black mb-6">{selected.length}/5 selected</p>
+          <p className="text-center text-black mb-6">
+            {selected.length}/5 selected
+          </p>
 
           {fetching ? (
             <div className="flex justify-center items-center h-48 text-xl font-semibold text-gray-500">
@@ -110,9 +131,10 @@ const Profile = () => {
                   key={topic}
                   onClick={() => toggleTopic(topic)}
                   className={`h-32 rounded-2xl border-4 border-black font-bold text-lg shadow-[4px_4px_0px_black] transition-all
-                    ${selected.includes(topic)
-                      ? "bg-teal-400 text-white translate-y-[2px] shadow-none"
-                      : "bg-pink-400 text-white hover:translate-y-[-2px]"
+                    ${
+                      selected.includes(topic)
+                        ? "bg-teal-400 text-white translate-y-[2px] shadow-none"
+                        : "bg-pink-400 text-white hover:translate-y-[-2px]"
                     }`}
                 >
                   {topic}
@@ -134,15 +156,23 @@ const Profile = () => {
           )}
 
           {error && (
-            <p className="mt-4 text-red-600 font-semibold text-center">{error}</p>
+            <p className="mt-4 text-red-600 font-semibold text-center">
+              {error}
+            </p>
           )}
 
           <button
             className="mt-6 w-full bg-[#ffde59] border-4 border-black rounded-xl py-3 font-bold text-xl shadow-[4px_4px_0px_black] hover:translate-y-[-2px] transition-transform disabled:opacity-50 disabled:cursor-not-allowed disabled:translate-y-0"
             onClick={handleContinue}
-            disabled={loading || selected.length === 0 || (isUpdate && !hasChanges)}
+            disabled={
+              loading || selected.length === 0 || (isUpdate && !hasChanges)
+            }
           >
-            {loading ? "Saving..." : isUpdate ? "Update Preferences →" : "Continue →"}
+            {loading
+              ? "Saving..."
+              : isUpdate
+                ? "Update Preferences →"
+                : "Continue →"}
           </button>
         </div>
       </div>

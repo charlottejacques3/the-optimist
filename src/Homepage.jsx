@@ -3,7 +3,7 @@ import Header from "./components/Header";
 import NewsCard from "./components/NewsCard";
 import { supabase } from "./supabaseClient";
 import dancing from "./assets/dancing.jpeg";
-import ada from "./assets/Ada_Lovelace.jpg"
+import ada from "./assets/Ada_Lovelace.jpg";
 
 const Modal = ({ isOpen, onClose, children }) => {
   if (!isOpen) return null;
@@ -34,13 +34,13 @@ const Homepage = () => {
   const [articles, setArticles] = useState([]);
   const [historicalFigure, setHistoricalFigure] = useState(null);
   const [dayInHistory, setDayInHistory] = useState(null);
-const[loadingArticles,setLoadingArticles] = useState(true);
-const[articleError, setArticleError] = useState(null);
+  const [loadingArticles, setLoadingArticles] = useState(true);
+  const [articleError, setArticleError] = useState(null);
   const [claudeResponse, setClaudeResponse] = useState(null);
 
   const callClaude = async () => {
-    const { data, error } = await supabase.functions.invoke('call_claude', {
-      body: { "keywords": ["rescue", "women's rights", "climate", "community"] } ,
+    const { data, error } = await supabase.functions.invoke("call_claude", {
+      body: { keywords: ["rescue", "women's rights", "climate", "community"] },
     });
     if (error) {
       console.error("Error calling function:", error);
@@ -50,10 +50,11 @@ const[articleError, setArticleError] = useState(null);
     }
   };
 
-
-
   const getHistoricalFigure = async () => {
-    const { data, error } = await supabase.functions.invoke('historical_figure', {});
+    const { data, error } = await supabase.functions.invoke(
+      "historical_figure",
+      {},
+    );
     if (error) {
       console.error("Error calling function:", error);
     } else {
@@ -62,8 +63,11 @@ const[articleError, setArticleError] = useState(null);
     }
   };
 
-    const getDayInHistory = async () => {
-    const { data, error } = await supabase.functions.invoke('day_in_history', {});
+  const getDayInHistory = async () => {
+    const { data, error } = await supabase.functions.invoke(
+      "day_in_history",
+      {},
+    );
     if (error) {
       console.error("Error calling function:", error);
     } else {
@@ -71,17 +75,19 @@ const[articleError, setArticleError] = useState(null);
       return data;
     }
   };
-  
-  
 
   useEffect(() => {
-    
     const now = new Date();
     const dateString = now.toISOString().substring(5, 10);
     console.log("Current date string:", dateString);
 
     const fetchHistoricalFigure = async () => {
-      let { data, error } = await supabase.from("historical_figures").select("*").eq("date", dateString).limit(1).single();
+      let { data, error } = await supabase
+        .from("historical_figures")
+        .select("*")
+        .eq("date", dateString)
+        .limit(1)
+        .single();
       console.log("Supabase query result:", { data, error });
       if (error) {
         console.log(error.message);
@@ -92,8 +98,7 @@ const[articleError, setArticleError] = useState(null);
             setHistoricalFigure(fromClaude);
           }
         }
-      }
-      else if (data) {
+      } else if (data) {
         setHistoricalFigure(data);
       } else {
         // console.log("No historical figure found for today.");
@@ -101,7 +106,12 @@ const[articleError, setArticleError] = useState(null);
     };
 
     const fetchDayInHistory = async () => {
-      let { data, error } = await supabase.from("day_in_history").select("*").eq("date", dateString).limit(1).single();
+      let { data, error } = await supabase
+        .from("day_in_history")
+        .select("*")
+        .eq("date", dateString)
+        .limit(1)
+        .single();
       console.log("Supabase query result:", { data, error });
       if (error) {
         console.log(error.message);
@@ -112,67 +122,81 @@ const[articleError, setArticleError] = useState(null);
             setDayInHistory(fromClaude);
           }
         }
-      }
-      else if (data) {
+      } else if (data) {
         setDayInHistory(data);
       } else {
         console.log("No day in history figure found for today.");
       }
     };
-    const link= 'https://en.wikipedia.org/wiki/Dancing_plague_of_1518'
+    const link = "https://en.wikipedia.org/wiki/Dancing_plague_of_1518";
     const loadArticles = async () => {
-        setLoadingArticles(true);
-        setArticleError(null);
+      setLoadingArticles(true);
+      setArticleError(null);
 
-        try{
-            //get user
-            const { data: {user } } = await supabase.auth.getUser();
-            if(!user) throw new Error("User not logged in.");
+      try {
+        //get user
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (!user) throw new Error("User not logged in.");
 
-            //check for articles newwer than 24 hours
-            const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-            const {data: recentArticles,error:fetchError } = await supabase
-            .from("articles")
-            .select("*")
-            .eq("user_id", user.id)
-            .gte("created_at", cutoff)
-            .order("created_at",{ ascending: false});
+        //check for articles newwer than 24 hours
+        const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+        const { data: recentArticles, error: fetchError } = await supabase
+          .from("articles")
+          .select("*")
+          .eq("user_id", user.id)
+          .gte("created_at", cutoff)
+          .order("created_at", { ascending: false });
 
-            if(fetchError) throw new Error(fetchError.message);
+        if (fetchError) throw new Error(fetchError.message);
 
-            if (recentArticles && recentArticles.length > 0) {
-                setArticles(recentArticles);
-            }else{//get user preferences
-                const { data: prefs, error: prefsError } = await supabase
-                .from("preferences")
-                .select("topics")
-                .eq("id", user.id)
-                .single();
+        if (recentArticles && recentArticles.length > 0) {
+          setArticles(recentArticles);
+        } else {
+          //get user preferences
+          const { data: prefs, error: prefsError } = await supabase
+            .from("preferences")
+            .select("topics")
+            .eq("id", user.id)
+            .single();
 
-                if(prefsError) throw new Error(prefsError.message);
+          const allTopics = [
+            "animals",
+            "climate",
+            "human rights",
+            "women's rights",
+            "community",
+            "rescue",
+            "economics",
+            "cute stories",
+          ];
+          const keywords =
+            prefs?.topics?.split(",").filter(Boolean) ?? allTopics.slice(0, 3);
+          const { data, error: claudeError } = await supabase.functions.invoke(
+            "call_claude",
+            {
+              body: { keywords, user_id: user.id }, // pass user_id so edge function can tag articles
+            },
+          );
 
-                const keywords = prefs?.topics?.split(",").filter(Boolean) ?? [];
-                 const { data, error: claudeError } = await supabase.functions.invoke("call_claude", {
-          body: { keywords, user_id: user.id },  // pass user_id so edge function can tag articles
-        });
+          if (claudeError) throw new Error(claudeError.message);
+          const fetchArticles = data?.articles ?? data;
+          setArticles(fetchArticles);
+        }
+      } catch (err) {
+        console.error(err);
+        setArticleError("Couldnt read articles");
+      } finally {
+        setLoadingArticles(false);
+      }
+    };
 
-        if (claudeError) throw new Error(claudeError.message);
-                const fetchArticles = data?.articles ?? data;
-                setArticles(fetchArticles);
-    }
-} catch (err) {
-    console.error(err);
-    setArticleError("Couldnt read articles")
-}finally{
-    setLoadingArticles(false);
-}
-};
-    
     fetchHistoricalFigure();
     fetchDayInHistory();
-loadArticles();
-},[]);
-                    
+    loadArticles();
+  }, []);
+
   return (
     <div className="min-h-screen bg-teal-400 font-sans">
       <Header />
@@ -181,7 +205,6 @@ loadArticles();
       <div className="flex gap-6 p-6">
         {/* Main Column — 2/3 */}
         <div className="flex flex-col gap-4 w-2/3">
-                        
           {articles.map((article, i) => (
             <NewsCard
               key={i}
@@ -191,7 +214,6 @@ loadArticles();
               link={article.url ?? "#"}
             />
           ))}
-
         </div>
         {/* Sidebar — 1/3 */}
         <div className="flex flex-col gap-4 w-1/3">
@@ -199,7 +221,7 @@ loadArticles();
           <div className="bg-[#ffde59] border-4 border-black rounded-2xl px-6 py-4 shadow-[6px_6px_0px_black] flex items-center justify-center">
             <span className="text-3xl">🔥</span>
             <span className="text-xl font-bold text-black font-serif">
-              4 day Streak
+              2 day Streak
             </span>
           </div>
 
@@ -208,56 +230,89 @@ loadArticles();
             <button
               onClick={() => setProfileOpen(true)}
               className="bg-pink-400 border-4 cursor-pointer border-black rounded-2xl px-4 py-3 shadow-[6px_6px_0px_black] flex items-center gap-4 text-left hover:translate-y-[-2px] transition-transform"
-            ><img src={historicalFigure.image} alt= " dancing" className="w-14 h-14 object-cover border-2 border-black rounded-lg shrink-0"/>
+            >
+              <img
+                src={historicalFigure.image}
+                alt=" dancing"
+                className="w-14 h-14 object-cover border-2 border-black rounded-lg shrink-0"
+              />
               <div>
-                <p className="font-bold text-black text-3xl">{historicalFigure.name}</p>
+                <p className="font-bold text-black text-3xl">
+                  {historicalFigure.name}
+                </p>
               </div>
-            </button>)}
+            </button>
+          )}
 
           {/* Weird Fact Card — opens modal */}
           {dayInHistory && (
             <button
               onClick={() => setFactOpen(true)}
               className=" border-4 border-black cursor-pointer rounded-2xl px-4 py-3 shadow-[6px_6px_0px_black] flex items-center gap-4 text-left hover:translate-y-[-2px] transition-transform"
-            ><img src={dayInHistory.image} alt= " dancing" className="w-14 h-14 object-cover border-2 border-black rounded-lg shrink-0"/>
+            >
+              <img
+                src={dayInHistory.image}
+                alt=" dancing"
+                className="w-14 h-14 object-cover border-2 border-black rounded-lg shrink-0"
+              />
               <p className="text-black font-bold text-3xl">Today in History</p>
-            <p className="text-black text-xl">{dayInHistory.name}</p>
-          </button>)}
+              <p className="text-black text-xl">{dayInHistory.name}</p>
+            </button>
+          )}
         </div>
       </div>
-{/* Profile Modal */}
+      {/* Profile Modal */}
       <Modal isOpen={profileOpen} onClose={() => setProfileOpen(false)}>
         {/* Image banner */}
-        {historicalFigure ? 
-        <><figure className="w-full h-60 border-black border-b-2">
-          <div className="w-full h-full bg-pink-400 flex items-center justify-center">
-            <img src={historicalFigure.image} alt={historicalFigure.name} className="w-full border-2 h-full object-cover" />
-          </div>
-        </figure>
-        <div className="px-6 py-5 text-left relative">
-          
-          <h1 className="text-[32px] mb-3 mt-5 font-bold leading-tight">{historicalFigure.name}</h1>
-          <p className="text-xs mb-4 text-black-700 leading-relaxed">
-            {historicalFigure.summary}
-          </p>
-        </div></> : <p className="text-center text-gray-500">Loading...</p>}
+        {historicalFigure ? (
+          <>
+            <figure className="w-full h-60 border-black border-b-2">
+              <div className="w-full h-full bg-pink-400 flex items-center justify-center">
+                <img
+                  src={historicalFigure.image}
+                  alt={historicalFigure.name}
+                  className="w-full border-2 h-full object-cover"
+                />
+              </div>
+            </figure>
+            <div className="px-6 py-5 text-left relative">
+              <h1 className="text-[32px] mb-3 mt-5 font-bold leading-tight">
+                {historicalFigure.name}
+              </h1>
+              <p className="text-xs mb-4 text-black-700 leading-relaxed">
+                {historicalFigure.summary}
+              </p>
+            </div>
+          </>
+        ) : (
+          <p className="text-center text-gray-500">Loading...</p>
+        )}
       </Modal>
 
       {/* Weird Fact Modal */}
       <Modal isOpen={factOpen} onClose={() => setFactOpen(false)}>
         {/* Image banner */}
-        { dayInHistory ?
-        <>
-        <figure className="w-full h-36 border-black border-b-2">
-          <img src={dayInHistory.image} alt="dancing" className="w-full border-2 h-full object-cover" />
-        </figure>
-        <div className="px-6 py-5 text-left">
-          <h1 className="text-[32px] mt-5 mb-3 font-bold leading-tight">{dayInHistory.name}</h1>
-          <p className="text-xs mb-4 text-gray-700 leading-relaxed line-clamp-5">
-            {dayInHistory.summary}
-          </p>
-        </div>
-        </> : <p className="text-center text-gray-500">Loading...</p>}
+        {dayInHistory ? (
+          <>
+            <figure className="w-full h-36 border-black border-b-2">
+              <img
+                src={dayInHistory.image}
+                alt="dancing"
+                className="w-full border-2 h-full object-cover"
+              />
+            </figure>
+            <div className="px-6 py-5 text-left">
+              <h1 className="text-[32px] mt-5 mb-3 font-bold leading-tight">
+                {dayInHistory.name}
+              </h1>
+              <p className="text-xs mb-4 text-gray-700 leading-relaxed line-clamp-5">
+                {dayInHistory.summary}
+              </p>
+            </div>
+          </>
+        ) : (
+          <p className="text-center text-gray-500">Loading...</p>
+        )}
       </Modal>
     </div>
   );
