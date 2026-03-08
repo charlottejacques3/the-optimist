@@ -12,88 +12,42 @@ import Profile from "./Profile";
 import { supabase } from "./supabaseClient";
 import { useState, useEffect } from "react";
 
-function App() {;
-
+function App() {
   const [claims, setClaims] = useState(null);
+  const [loading, setLoading] = useState(true); // add this
 
   useEffect(() => {
-  // Check for existing session using getClaims
     supabase.auth.getClaims().then(({ data: { claims } }) => {
-        setClaims(claims);
+      setClaims(claims);
+      setLoading(false); // add this
     });
 
-    // Listen for auth changes
-    const {
-        data: { subscription },
-    } = supabase.auth.onAuthStateChange(() => {
-        supabase.auth.getClaims().then(({ data: { claims } }) => {
-            setClaims(claims);
-        });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+      supabase.auth.getClaims().then(({ data: { claims } }) => {
+        setClaims(claims);
+        setLoading(false);
+      });
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
+  if (loading) return null; // wait before rendering any routes
+
   return (
     <Router>
-      {/* Define routes */}
       <Routes>
-        <Route path="/" element={<LandingPage username={null}/>} />
-        {claims &&
+        <Route path="/" element={<LandingPage username={null} />} />
+        {claims ? (
           <>
             <Route path="/home" element={<Homepage />} />
             <Route path="/profile" element={<Profile />} />
           </>
-        }
-      </Routes>
-      {/*<div
-        style={{ backgroundColor: "rgba(5, 150, 105, var(--tw-bg-opacity))" }}
-      >
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-
-      <h1 className="text-3xl font-bold">Vite + React</h1>
-
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-
-      {/* Tailwind test card }
-      <div className="bg-white rounded-2xl shadow-lg p-8 max-w-sm mx-auto mt-8">
-        <h2 className="text-3xl font-bold text-purple-600 mb-2">
-          Tailwind Works! 🎉
-        </h2>
-        <p className="text-gray-500 text-sm mb-4">
-          If this card looks styled, you're good to go.
-        </p>
-        <button
-          onClick={callClaude}
-          className="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-4 py-2 rounded-lg w-full transition-colors"
-        >
-          Call Claude
-        </button>
-        {claudeResponse && (
-          <p className="mt-4 text-green-600 text-sm">
-            {JSON.stringify(claudeResponse)}
-          </p>
+        ) : (
+          <Route path="*" element={<Navigate to="/" replace />} />
         )}
-      </div>
-
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>*/}
+      </Routes>
     </Router>
   );
 }
-
 export default App;
