@@ -11,8 +11,7 @@ import LandingPage from "./LandingPage";
 import Profile from "./Profile";
 
 
-function App() {
-  const username = "Test User";
+function App() {;
   {
     /* const [count, setCount] = useState(0);
   const [claudeResponse, setClaudeResponse] = useState(null);
@@ -34,7 +33,7 @@ function App() {
     <Router>
       {/* Define routes */}
       <Routes>
-        <Route path="/" element={<LandingPage username={username} />} />
+        <Route path="/" element={<LandingPage username={null} />} />
         <Route path="/home" element={<Homepage />} />
         <Route path="/profile" element={<Profile />} />
       </Routes>
