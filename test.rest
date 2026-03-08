@@ -1,6 +1,17 @@
 POST http://127.0.0.1:54321/functions/v1/call_claude
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwczovL3N1cGFiYXNlLmNvbS9hdXRoL2NsYWltcyI6eyJyb2xlIjoiYWRtaW4ifSwiaHR0cHM6Ly9zdXBhYmFzZS5jb20vYXV0aC9pZCI6Ijg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODgiLCJodHRwczovL3N1cGFiYXNlLmNvbS9hdXRoL2VtYWlsIjoiY2hhcmxAb3B0aW1pc3QuY29tIiwiaWF0IjoxNjkwOTQyMDk5LCJleHAiOjE5MDk0OTgwOTl9.8eHjK
 
 { "keywords": ["rescue", "women's rights", "climate", "community"] } 
+
+###
+
+POST http://127.0.0.1:54321/functions/v1/historical_figure
+Content-Type: application/json
+
+###
+
+POST http://127.0.0.1:54321/functions/v1/day_in_history
+Content-Type: application/json
 
 ###
