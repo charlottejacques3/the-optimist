@@ -48,7 +48,7 @@ const[articleError, setArticleError] = useState(null);
     }
   };
 
-  const callClaude = async () => {
+{/* const callClaude = async () => {
     const { data, error } = await supabase.functions.invoke('historical_figure', {
       // body: { "keywords": ["rescue", "women's rights", "climate", "community"] } ,
     });
@@ -57,7 +57,7 @@ const[articleError, setArticleError] = useState(null);
     } else {
       console.log(data);
     }
-  };
+  };*/}
 
   useEffect(() => {
     const loadArticles = async () => {
@@ -126,7 +126,7 @@ loadArticles();
               imageUrl={article.image_url}
               headline={article.headline}
               body={article.summary}
-              link={article.url}
+              link={article.url ?? "#"}
             />
           ))}
 
@@ -193,9 +193,9 @@ loadArticles();
             and apparently unwillingly for days on end. The mania lasted for about two months
             before ending as mysteriously as it began.
           </p>
-          <a href= {link} >
-          <strong className="text-sm">Read More</strong>
-          </a>
+          <a href="https://en.wikipedia.org/wiki/Dancing_plague_of_1518" target="_blank" rel="noreferrer">
+  <strong className="text-sm">Read More</strong>
+</a>
         </div>
       </Modal>
     </div>
