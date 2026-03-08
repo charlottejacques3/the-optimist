@@ -8,28 +8,19 @@ const Header = () => {
   return (
 
     <div
-      className="flex border-3 border-black items-center justify-between px-10 py-4 margin-bottom-5"
+      className="flex border-3 border-black items-center justify-between px-10 py-4 mb-5 "
       style={{ backgroundColor: "#f5f0e0" }}
     >
       {/* Left - Logo */}
       <div>
-        <p className="text-black text-3xl font-['Berkshire_Swash']">The</p>
-        <h1 className="text-black text-7xl font-['Berkshire_Swash'] font-bold italic">
+        <p className="text-black text-2xl font-['Berkshire_Swash']">The</p>
+        <h1 className="text-black text-4xl font-['Berkshire_Swash'] font-bold italic">
           Optimist
         </h1>
-        <p className="text-black font-['Glass_Antiqua'] text-5xl italic">
+        <p className="text-black font-['Glass_Antiqua'] text-3xl italic">
           The world isn't all bad
         </p>
       </div>
-
-      {/* Center - Search bar 
-      <div className="flex-1 mx-17">
-        <input
-          className="w-full border-black border-2 p-3 focus:outline-none rounded-full"
-          style={{ backgroundColor: "#f5e642" }}
-          placeholder="Search..."
-        />
-      </div>*/}
 
       {/* Right - Sign in */}
       {user ? (

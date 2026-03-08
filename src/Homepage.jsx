@@ -37,9 +37,11 @@ const Homepage = () => {
       let { data, error } = await supabase.from("articles").select("*");
       if (error) console.log(error.message);
       else setArticles(data);
+      console.log(data.headline)
     };
     fetchArticles();
   }, []);
+                    
   return (
     <div className="min-h-screen bg-teal-400 font-sans">
       <Header />
@@ -48,6 +50,7 @@ const Homepage = () => {
       <div className="flex gap-6 p-6">
         {/* Main Column — 2/3 */}
         <div className="flex flex-col gap-4 w-2/3">
+                        
           {articles.map((article, i) => (
             <NewsCard
               key={i}
@@ -57,14 +60,14 @@ const Homepage = () => {
               link={article.url}
             />
           ))}
-        </div>
 
+        </div>
         {/* Sidebar — 1/3 */}
         <div className="flex flex-col gap-4 w-1/3">
           {/* Streak */}
           <div className="bg-[#ffde59] border-4 border-black rounded-2xl px-6 py-4 shadow-[6px_6px_0px_black] flex items-center justify-center">
-            <span className="text-7xl">🔥</span>
-            <span className="text-5xl font-bold text-black font-serif">
+            <span className="text-3xl">🔥</span>
+            <span className="text-xl font-bold text-black font-serif">
               4 day Streak
             </span>
           </div>
@@ -76,8 +79,8 @@ const Homepage = () => {
           >
             <div className="bg-teal-400 border-2 border-black rounded-lg w-14 h-14 shrink-0" />
             <div>
-              <p className="font-bold text-black text-5xl">{"{Name}"}</p>
-              <p className="text-black text-4xl">infoinfoinfo</p>
+              <p className="font-bold text-black text-3xl">{"{Name}"}</p>
+              <p className="text-black text-xl">infoinfoinfo</p>
             </div>
           </button>
 
@@ -87,8 +90,8 @@ const Homepage = () => {
             className="bg-blue-700 border-4 border-black rounded-2xl px-4 py-3 shadow-[6px_6px_0px_black] flex items-center gap-4 text-left hover:translate-y-[-2px] transition-transform"
           >
             <div className="bg-teal-400 border-2 border-black rounded-lg w-14 h-14 shrink-0" />
-            <p className="text-white font-bold text-5xl">Weird Fact</p>
-            <p className="text-black text-4xl">infoinfoinfo</p>
+            <p className="text-white font-bold text-3xl">Weird Fact</p>
+            <p className="text-black text-xl">infoinfoinfo</p>
           </button>
         </div>
       </div>
