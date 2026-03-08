@@ -13,8 +13,8 @@ const NewsCard = ({headline, body,  imageUrl, link}) => {
                />
          </figure>
          <div class="px-6 py-5 text-left h-full">
-            <h1 class="text-[32px] mb-4">{headline}</h1>
-            <p class="text-xs mb-4 line-clamp-4">
+            <h1 class="text-7xl mb-4">{headline}</h1>
+            <p class="text-3xl mb-4 line-clamp-4">
                 {body}
             </p>
          </div>
