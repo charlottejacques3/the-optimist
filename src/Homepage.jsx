@@ -2,6 +2,7 @@ import React,{useState} from "react";
 import Header from "./components/Header";
 import NewsCard from "./components/NewsCard";
 
+
 const Modal = ({ isOpen, onClose, children }) => {
   if (!isOpen) return null;
   return (
@@ -66,8 +67,9 @@ const Homepage = () => {
         <div className="flex flex-col gap-4 w-1/3">
 
       {/* Streak */}
-          <div className="bg-[#e8e0c8] border-4 border-black rounded-2xl px-6 py-4 shadow-[6px_6px_0px_black] flex items-center justify-center">
-            <span className="text-5xl font-bold text-black font-serif">Streak</span>
+          <div className="bg-[#ffde59] border-4 border-black rounded-2xl px-6 py-4 shadow-[6px_6px_0px_black] flex items-center justify-center">
+            <span  className="text-7xl">🔥</span>
+                <span className = "text-5xl font-bold text-black font-serif">4 day Streak</span>
           </div>
 
           {/* Pink Card — opens modal */}

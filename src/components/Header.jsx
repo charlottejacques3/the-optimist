@@ -1,10 +1,12 @@
 import React from "react";
 import { useState } from "react";
-
+import {Menu} from "lucide-react";
+import DropDown from "./Dropdown";
 const Header = () => {
   const [hovered, setHovered] = useState(false);
-
+    const user = true; // Placeholder for user authentication state
   return (
+
     <div
       className="flex border-3 border-black items-center justify-between px-10 py-4 margin-bottom-5"
       style={{ backgroundColor: "#f5f0e0" }}
@@ -20,28 +22,32 @@ const Header = () => {
         </p>
       </div>
 
-      {/* Center - Search bar */}
-      <div className="flex-1 mx-8">
+      {/* Center - Search bar 
+      <div className="flex-1 mx-17">
         <input
-          className="w-full border-black border-2 p-2.5 focus:outline-none rounded-full"
+          className="w-full border-black border-2 p-3 focus:outline-none rounded-full"
           style={{ backgroundColor: "#f5e642" }}
           placeholder="Search..."
         />
-      </div>
+      </div>*/}
 
       {/* Right - Sign in */}
-      <button
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        style={{
-          backgroundColor: hovered ? "#c800d4" : "#e040fb",
-          border: "2px solid black",
-          transition: "background-color 0.2s",
-        }}
-        className="h-12 px-6 rounded-full font-bold text-white"
-      >
-        SIGN IN
-      </button>
+      {user ? (
+        <DropDown  />
+      ) : (
+        <button
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          style={{
+            backgroundColor: hovered ? "#c800d4" : "#e040fb",
+            border: "2px solid black",
+            transition: "background-color 0.2s",
+          }}
+          className="h-12 px-6 rounded-full font-bold text-white"
+        >
+          SIGN IN
+        </button>
+      )}
     </div>
   );
 };
