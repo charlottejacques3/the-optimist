@@ -50,6 +50,7 @@ export const callNewsAPI = async (keywords) => {
     pageSize: 60,
     sortBy: "relevancy",
   }).then(response => {
+    console.log("News API response:", response.articles.length, "articles found");
     return response.articles.map((article) => article.url);
   }).catch(error => {
     console.error("Error calling News API:", error);

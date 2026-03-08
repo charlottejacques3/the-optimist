@@ -58,9 +58,14 @@ Deno.serve(async (req) => {
      allKeywords[keyword] = moreKeywords[keyword]; 
     })
 
-    // if minimal text content is found, do not
     const stepInstructions = {
-      1: "For EVERY one of the news articles found, call the article search tool to get the text content at the URL. If the article cannot be accessed or does not contain enough text content, skip it and move on to the next one.",
+      1: `Call the article_search tool for EVERY SINGLE article URL returned. 
+      Do not batch, do not summarize, do not stop early. 
+      You must call article_search once per URL before proceeding. 
+      If the article cannot be accessed or does not contain enough text content, skip it and move on to the next one.
+      At the end, tell me how many articles you were able to retrieve content for and how many you had to skip.
+      These two numbers added together should equal the total number of URLs returned by the news_api tool.`,
+      
       2: `Note: do not explain your work, only return JSON output as explained below. Never use markdown formatting, code blocks, or backticks. Return only raw, valid JSON with no preamble or explanation.
       
       You now have the full text of each article. If an article does not have enough text content to analyze, skip over it. For EVERY article, do the following:
