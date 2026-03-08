@@ -12,22 +12,6 @@ import Profile from "./Profile";
 
 
 function App() {;
-  {
-    /* const [count, setCount] = useState(0);
-  const [claudeResponse, setClaudeResponse] = useState(null);
-
-  const callClaude = async () => {
-    const { data, error } = await supabase.functions.invoke('call_claude', {
-      body: { "keywords": ["rescue", "women's rights", "climate", "community"] } ,
-    });
-    if (error) {
-      console.error("Error calling function:", error);
-    } else {
-      console.log(data);
-      setClaudeResponse(data);
-    }
-  };*/
-  }
 
   return (
     <Router>
