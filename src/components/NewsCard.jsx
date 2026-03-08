@@ -2,10 +2,10 @@ import React from 'react';
 
 const NewsCard = ({headline, body, imageUrl, link}) => {
     return (
-        <div className="w-full border-black border-2 rounded-md hover:shadow-[8px_8px_0px_rgba(0,0,0,1)] bg-white overflow-hidden">
+        <div className="w-full border-black border-2 rounded-md hover:shadow-[8px_8px_0px_rgba(0,0,0,1)] bg-white overflow-hidden flex flex-col">
            <a href={link} className="block cursor-pointer">
-              <article className="w-full">
-                 <figure className="w-full h-48 border-black border-b-2">
+              <article className="w-full flex flex-col">
+                 <figure className="w-full h-48 shrink-0 border-black border-b-2">
                     <img
                        src={imageUrl || "https://neo-brutalism-ui-library.vercel.app/assets/neo-brutalism-image3-6c6a875b.jpg"}
                        alt="thumbnail"
