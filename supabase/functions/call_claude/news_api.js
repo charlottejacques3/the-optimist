@@ -42,12 +42,13 @@ export const callNewsAPI = async (keywords) => {
     q: allKeywords.join(" OR "),
     from: yesterday6am,
     to: today6am,
+    pageSize: 5,
     sortBy: "relevancy",
   }).then(response => {
-    // console.log("News API response:", response);
-    return response;
+    return response.articles.map((article) => article.url);
   }).catch(error => {
     console.error("Error calling News API:", error);
     return null;
   });
+  return [];
 }
