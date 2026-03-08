@@ -26,18 +26,28 @@ export const callNewsAPI = async (keywords) => {
   keywords.forEach((keyword) => {
     allKeywords.push(... moreKeywords[keyword]);
   });
+  console.log("Expanded keywords:", allKeywords);
 
   // find the date
   const today = new Date();
   today.setHours(6, 0, 0, 0); // set to 6AM
   const yesterday = new Date(today);
-  yesterday.setDate(today.getDate() - 1);
+  yesterday.setDate(today.getDate() - 4);
   const today6am = today.toISOString();
   const yesterday6am = yesterday.toISOString();
-  console.log(today6am, yesterday6am);
 
+  // call the api
   const newsAPI = new NewsAPI(process.env.NEWS_API_KEY);
-  newsAPI.v2.everything({
+  return newsAPI.v2.everything({
     q: allKeywords.join(" OR "),
+    from: yesterday6am,
+    to: today6am,
+    sortBy: "relevancy",
+  }).then(response => {
+    // console.log("News API response:", response);
+    return response;
+  }).catch(error => {
+    console.error("Error calling News API:", error);
+    return null;
   });
 }

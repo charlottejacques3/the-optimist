@@ -28,7 +28,7 @@ const prompt = {
     messages: [
       { 
         role: "user", 
-        content: "Please call News API with the following keywords: animals, rescue, and human rights." 
+        content: "Call News API with the following keywords: rescue and economics" 
       }
     ],
   }
@@ -60,7 +60,8 @@ Deno.serve(async (req) => {
       const toolName = message.content[1].name;
       const toolParams = message.content[1].input;
       if (toolName === "news_api") {
-        callNewsAPI(toolParams.keywords);
+        const newsResult = await callNewsAPI(toolParams.keywords);
+        console.log("News API result:", newsResult);
       }
     }
 
