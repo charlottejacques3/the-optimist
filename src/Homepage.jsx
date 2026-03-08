@@ -31,11 +31,11 @@ const Homepage = () => {
   const [profileOpen, setProfileOpen] = useState(false);
   const [factOpen, setFactOpen] = useState(false);
   const [articles, setArticles] = useState([]);
+  const [historicalFigure, setHistoricalFigure] = useState(null);
+  const [dayInHistory, setDayInHistory] = useState(null);
 
-  const callClaude = async () => {
-    const { data, error } = await supabase.functions.invoke('historical_figure', {
-      // body: { "keywords": ["rescue", "women's rights", "climate", "community"] } ,
-    });
+  const getHistoricalFigure = async () => {
+    const { data, error } = await supabase.functions.invoke('historical_figure', {});
     if (error) {
       console.error("Error calling function:", error);
     } else {
@@ -44,13 +44,30 @@ const Homepage = () => {
   };
 
   useEffect(() => {
+    
+    const now = new Date();
+    const dateString = now.toISOString().split("T")[0]; // Get YYYY-MM-DD
+
     const fetchArticles = async () => {
       let { data, error } = await supabase.from("articles").select("*");
       if (error) console.log(error.message);
       else setArticles(data);
       console.log(data.headline)
     };
+
+    const fetchHistoricalFigure = async () => {
+      let { data, error } = await supabase.from("articles").select("*").where("date", "eq", dateString).single();
+      if (error) console.log(error.message);
+      else if (data) {
+        setHistoricalFigure(data);
+      } else {
+        await getHistoricalFigure();
+      }
+      console.log(data.headline)
+    };
+
     fetchArticles();
+    fetchHistoricalFigure();
   }, []);
                     
   return (
