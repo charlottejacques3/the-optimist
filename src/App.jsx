@@ -14,7 +14,7 @@ function App() {
   const [count, setCount] = useState(0);
   const callClaude = async () => {
     const { data, error } = await supabase.functions.invoke('call_claude', {
-      body: { input: 'Hello Claude' },
+      body: { "keywords": ["rescue", "women's rights", "climate", "community"] } ,
     });
     if (error) {
       console.error("Error calling function:", error);
