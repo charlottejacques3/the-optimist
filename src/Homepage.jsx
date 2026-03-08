@@ -87,7 +87,7 @@ const[articleError, setArticleError] = useState(null);
         console.log(error.message);
         if (error.code === "PGRST116") {
           console.log("No historical figure found for today in the database.");
-          const fromClaude = await getDayInHistory();
+          const fromClaude = await getHistoricalFigure();
           if (fromClaude) {
             setHistoricalFigure(fromClaude);
           }

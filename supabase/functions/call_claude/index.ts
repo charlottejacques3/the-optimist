@@ -89,8 +89,8 @@ Deno.serve(async (req) => {
       
       If any of the above conditions are not met, discard the article. Follow these guidelines exactly, and do not adjust scores arbitrarily. 
       
-      After parsing through all the articles, sort the JSON output so that the articles with the highest total scores are displayed first.
-      The final JSON output should have the form:
+      After parsing through all the articles, sort the JSON output so that the articles with the highest total scores are displayed first. Add a maximum of 5 articles to the final JSON output, even if more than 5 articles meet the criteria.If fewer than 5 articles meet the criteria, only show the ones that meet the criteria. 
+      The final JSON output should have the following format:
       {
         "articles": [
           {

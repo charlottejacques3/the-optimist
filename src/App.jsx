@@ -17,14 +17,15 @@ function App() {
   const [loading, setLoading] = useState(true); // add this
 
   useEffect(() => {
-    supabase.auth.getClaims().then(({ data: { claims } }) => {
-      setClaims(claims);
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setClaims(session);
+      console.log("Initial claims:", session); // add this
       setLoading(false); // add this
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-      supabase.auth.getClaims().then(({ data: { claims } }) => {
-        setClaims(claims);
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        setClaims(session);
         setLoading(false);
       });
     });
