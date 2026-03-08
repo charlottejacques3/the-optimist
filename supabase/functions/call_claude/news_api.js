@@ -1,6 +1,6 @@
 import NewsAPI from "npm:newsapi";
 
-const moreKeywords = {
+export const moreKeywords = {
   "animals": 
     ["bird", "wildlife", "sanctuary", "conservation", "endangered", "habitat", "preservation", "mammal", "whale", "fish", "biodiversity", "extinct"],
   "climate":
@@ -19,13 +19,18 @@ const moreKeywords = {
     ["family", "love"]
 }
 
-
-export const callNewsAPI = async (keywords) => {
-  console.log("Calling News API with keywords:", keywords);
+export const getAllKeywords = (keywords) => {
   const allKeywords = [];
   keywords.forEach((keyword) => {
     allKeywords.push(... moreKeywords[keyword]);
   });
+  return allKeywords;
+}
+
+
+export const callNewsAPI = async (keywords) => {
+  console.log("Calling News API with keywords:", keywords);
+  const allKeywords = getAllKeywords(keywords);
   console.log("Expanded keywords:", allKeywords);
 
   // find the date
@@ -42,12 +47,13 @@ export const callNewsAPI = async (keywords) => {
     q: allKeywords.join(" OR "),
     from: yesterday6am,
     to: today6am,
+    pageSize: 60,
     sortBy: "relevancy",
   }).then(response => {
-    // console.log("News API response:", response);
-    return response;
+    return response.articles.map((article) => article.url);
   }).catch(error => {
     console.error("Error calling News API:", error);
     return null;
   });
+  return [];
 }
