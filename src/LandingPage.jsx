@@ -13,14 +13,12 @@ const LandingPage = () => {
   const [error, setError] = useState("");
 
   const [claims, setClaims] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState("");
 
   useEffect(() => {
   // Check for existing session using getClaims
     supabase.auth.getClaims().then(({ data: { claims } }) => {
         setClaims(claims);
-        setLoading(false);
         if (claims) {
           console.log(claims.user_metadata.display_name);
           setUsername(claims.user_metadata.display_name || claims.email);
