@@ -1,28 +1,77 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import squiggles from './assets/squiggles.png';
+import { supabase } from "./supabaseClient";
 
-const LandingPage = ({ username, onLogin }) => {
+const LandingPage = () => {
   const navigate = useNavigate();
   const [mode, setMode] = useState("login"); // "login" | "signup"
+  const [inputName, setInputName] = useState("");
   const [inputUser, setInputUser] = useState("");
   const [inputPass, setInputPass] = useState("");
   const [inputConfirm, setInputConfirm] = useState("");
   const [error, setError] = useState("");
 
-  const handleLogin = (e) => {
+  const [claims, setClaims] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [username, setUsername] = useState("");
+
+  useEffect(() => {
+  // Check for existing session using getClaims
+    supabase.auth.getClaims().then(({ data: { claims } }) => {
+        setClaims(claims);
+        setLoading(false);
+        if (claims) {
+          console.log(claims.user_metadata.display_name);
+          setUsername(claims.user_metadata.display_name || claims.email);
+        }
+    });
+
+    // Listen for auth changes
+    const {
+        data: { subscription },
+    } = supabase.auth.onAuthStateChange(() => {
+        supabase.auth.getClaims().then(({ data: { claims } }) => {
+            setClaims(claims);
+            if (claims) {
+              setUsername(claims.user_metadata.display_name || claims.email);
+            }
+        });
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogin = async (e) => {
     e.preventDefault();
     if (!inputUser.trim() || !inputPass.trim()) {
       setError("Please enter both fields.");
       return;
     }
-    // TODO: replace with real auth (Supabase, Firebase, etc.)
-    onLogin(inputUser);
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: inputUser,
+      password: inputPass
+    });
+    if (error) {
+      console.log(error.code, error.message);
+      let message;
+      switch (error.code) {
+        case "invalid_credentials": 
+          message = "The email or password entered is incorrect.";
+          break;
+        default:
+          message = "An error has occurred. Please try again.";
+      }
+      setError(message);
+    } else {
+      console.log(data);
+    }
   };
 
-  const handleSignUp = (e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault();
-    if (!inputUser.trim() || !inputPass.trim() || !inputConfirm.trim()) {
+    if (!inputUser.trim() || !inputPass.trim() || !inputConfirm.trim() || !inputName.trim()) {
       setError("Please fill in all fields.");
       return;
     }
@@ -30,13 +79,43 @@ const LandingPage = ({ username, onLogin }) => {
       setError("Passwords don't match.");
       return;
     }
-    // TODO: replace with real sign-up (Supabase, Firebase, etc.)
-    onLogin(inputUser);
+    
+    const { data, error } = await supabase.auth.signUp({
+      email: inputUser,
+      password: inputPass,
+      options: {
+        data: {
+          display_name: inputName
+        }
+      }
+    });
+    if (error) {
+      console.log(error.code, error.message);
+      let message;
+      switch (error.code) {
+        case "email_address_invalid": 
+          message = "Please enter a valid email.";
+          break;
+        case "email_exists":
+        case "user_exists":
+          message = "This email is already associated with an account.";
+          break;
+        case "weak_password":
+          message = "Password must be at least 6 characters.";
+          break;
+        default:
+          message = "An error has occurred. Please try again.";
+      }
+      setError(message);
+    } else {
+      console.log(data);
+    }
   };
 
   const switchMode = (newMode) => {
     setMode(newMode);
     setError("");
+    setInputName("");
     setInputUser("");
     setInputPass("");
     setInputConfirm("");
@@ -50,13 +129,13 @@ const LandingPage = ({ username, onLogin }) => {
   return (
     <div
       className="relative w-screen h-screen"
-      onClick={username ? () => navigate("/home") : undefined}
-      style={{ cursor: username ? "pointer" : "default" }}
+      onClick={claims ? () => navigate("/home") : undefined}
+      style={{ cursor: claims ? "pointer" : "default" }}
     >
       <img src={squiggles} alt="squiggles" className="w-full h-full object-cover" />
 
       <div className="absolute inset-0 flex items-center justify-center">
-        {username ? (
+        {claims ? (
           <h1 className="text-6xl font-bold text-Black font-['Glass_Antiqua'] drop-shadow-lg">
             Good morning, {username}!
           </h1>
@@ -69,9 +148,19 @@ const LandingPage = ({ username, onLogin }) => {
               {mode === "login" ? "Welcome" : "Create Account"}
             </h2>
 
+            {mode === "signup" && (
+              <input
+                type="name"
+                placeholder="First Name"
+                value={inputName}
+                onChange={(e) => setInputName(e.target.value)}
+                className={inputClass}
+              />
+            )}
+
             <input
               type="text"
-              placeholder="Username"
+              placeholder="Email"
               value={inputUser}
               onChange={(e) => setInputUser(e.target.value)}
               className={inputClass}

@@ -9,7 +9,8 @@ import {
 import Homepage from "./Homepage";
 import LandingPage from "./LandingPage";
 import Profile from "./Profile";
-
+import { supabase } from "./supabaseClient";
+import { useState, useEffect } from "react";
 
 function App() {;
   {
@@ -29,13 +30,37 @@ function App() {;
   };*/
   }
 
+  const [claims, setClaims] = useState(null);
+
+  useEffect(() => {
+  // Check for existing session using getClaims
+    supabase.auth.getClaims().then(({ data: { claims } }) => {
+        setClaims(claims);
+    });
+
+    // Listen for auth changes
+    const {
+        data: { subscription },
+    } = supabase.auth.onAuthStateChange(() => {
+        supabase.auth.getClaims().then(({ data: { claims } }) => {
+            setClaims(claims);
+        });
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
   return (
     <Router>
       {/* Define routes */}
       <Routes>
-        <Route path="/" element={<LandingPage username={null} />} />
-        <Route path="/home" element={<Homepage />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route path="/" element={<LandingPage username={null}/>} />
+        {claims &&
+          <>
+            <Route path="/home" element={<Homepage />} />
+            <Route path="/profile" element={<Profile />} />
+          </>
+        }
       </Routes>
       {/*<div
         style={{ backgroundColor: "rgba(5, 150, 105, var(--tw-bg-opacity))" }}
