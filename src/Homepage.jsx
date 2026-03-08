@@ -2,12 +2,14 @@ import React, { useState, useEffect } from "react";
 import Header from "./components/Header";
 import NewsCard from "./components/NewsCard";
 import { supabase } from "./supabaseClient";
+import dancing from "./assets/dancing.jpeg";
+import ada from "./assets/Ada_Lovelace.jpg"
 
 const Modal = ({ isOpen, onClose, children }) => {
   if (!isOpen) return null;
   return (
     <div
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+      className="absolute inset-0 bg-black/50 flex items-center justify-center z-50"
       onClick={onClose}
     >
       <div
@@ -41,7 +43,7 @@ const Homepage = () => {
     };
     fetchArticles();
   }, []);
-                    
+    const link= 'https://en.wikipedia.org/wiki/Dancing_plague_of_1518'
   return (
     <div className="min-h-screen bg-teal-400 font-sans">
       <Header />
@@ -76,50 +78,58 @@ const Homepage = () => {
           <button
             onClick={() => setProfileOpen(true)}
             className="bg-pink-400 border-4 border-black rounded-2xl px-4 py-3 shadow-[6px_6px_0px_black] flex items-center gap-4 text-left hover:translate-y-[-2px] transition-transform"
-          >
-            <div className="bg-teal-400 border-2 border-black rounded-lg w-14 h-14 shrink-0" />
+          ><img src={ada} alt= " dancing" className="w-14 h-14 object-cover border-2 border-black rounded-lg shrink-0"/>
             <div>
-              <p className="font-bold text-black text-3xl">{"{Name}"}</p>
-              <p className="text-black text-xl">infoinfoinfo</p>
+              <p className="font-bold text-black text-3xl">Ada Lovelace</p>
             </div>
           </button>
 
           {/* Weird Fact Card — opens modal */}
           <button
             onClick={() => setFactOpen(true)}
-            className="bg-blue-700 border-4 border-black rounded-2xl px-4 py-3 shadow-[6px_6px_0px_black] flex items-center gap-4 text-left hover:translate-y-[-2px] transition-transform"
-          >
-            <div className="bg-teal-400 border-2 border-black rounded-lg w-14 h-14 shrink-0" />
-            <p className="text-white font-bold text-3xl">Weird Fact</p>
-            <p className="text-black text-xl">infoinfoinfo</p>
+            className=" border-4 border-black rounded-2xl px-4 py-3 shadow-[6px_6px_0px_black] flex items-center gap-4 text-left hover:translate-y-[-2px] transition-transform"
+          ><img src={dancing} alt= " dancing" className="w-14 h-14 object-cover border-2 border-black rounded-lg shrink-0"/>
+            <p className="text-black font-bold text-3xl">Strange Historical Fact</p>
+            <p className="text-black text-xl">The Dancing Plague of 1518</p>
           </button>
         </div>
       </div>
-      {/* Profile Modal */}
+{/* Profile Modal */}
       <Modal isOpen={profileOpen} onClose={() => setProfileOpen(false)}>
-        <div className="flex items-center gap-4 mb-4">
-          <div className="bg-teal-400 border-2 border-black rounded-lg w-20 h-20 shrink-0" />
-          <div>
-            <h3 className="text-2xl font-bold text-black">{"{Name}"}</h3>
-            <p className="text-black text-sm">
-              Extended profile info goes here.
-            </p>
+        {/* Image banner */}
+        <figure className="w-full h-60 border-black border-b-2">
+          <div className="w-full h-full bg-pink-400 flex items-center justify-center">
+            <img src={ada} alt="Ada Lovelace" className="w-full border-2 h-full object-cover" />
           </div>
+        </figure>
+        <div className="px-6 py-5 text-left relative">
+          <p className="text-base mb-2 text-black-500">Ada Lovelace</p>
+          <p className="text-xs mb-4 text-black-700 leading-relaxed">
+            Ada Lovelace (born December 10, 1815, Piccadilly Terrace, Middlesex [now in London], England—died November 27, 1852, Marylebone, London) was an English mathematician, an associate of Charles Babbage, for whose prototype of a digital computer she created a program. She has been called the first computer programmer. The second Tuesday of October is traditionally celebrated as Ada Lovelace Day, during which women’s contributions to science, technology, engineering, and mathematics are honored.
+          </p>
+          <strong className="text-sm">View Full Profile</strong>
         </div>
-        <p className="text-black text-sm">
-          More details, stats, or content for this person.
-        </p>
       </Modal>
 
       {/* Weird Fact Modal */}
       <Modal isOpen={factOpen} onClose={() => setFactOpen(false)}>
-        <h3 className="text-2xl font-bold text-black mb-3">
-          🤯 Weird History Fact
-        </h3>
-        <p className="text-black text-sm leading-relaxed">
-          Your weird fact content goes here. Replace this with whatever
-          surprising historical tidbit you want to surface to readers today.
-        </p>
+        {/* Image banner */}
+        <figure className="w-full h-36 border-black border-b-2">
+          <img src={dancing} alt="dancing" className="w-full border-2 h-full object-cover" />
+        </figure>
+        <div className="px-6 py-5 text-left">
+          <p className="text-base mb-2 text-gray-500">Strange Historical Fact</p>
+          <h1 className="text-[32px] mb-3 font-bold leading-tight">The Dancing Plague of 1518</h1>
+          <p className="text-xs mb-4 text-gray-700 leading-relaxed line-clamp-5">
+            The dancing plague of 1518 was an event in which hundreds of citizens of Strasbourg
+            (then a free city within the Holy Roman Empire, now in France) danced uncontrollably
+            and apparently unwillingly for days on end. The mania lasted for about two months
+            before ending as mysteriously as it began.
+          </p>
+          <a href= {link} className="block-cursor pointer">
+          <strong className="text-sm">Read More</strong>
+          </a>
+        </div>
       </Modal>
     </div>
   );
