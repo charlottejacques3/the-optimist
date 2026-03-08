@@ -46,7 +46,8 @@ Deno.serve(async (req) => {
     return new Response('ok', { headers: corsHeaders });
   }
   try {
-    const { keywords } = await req.json();
+    //const { keywords } = await req.json();
+    const { keywords , user_id } = await req.json();
     const client = new Anthropic({ apiKey: Deno.env.get('ANTHROPIC_API_KEY')! });
 
     const authHeader = req.headers.get('Authorization')!
@@ -155,12 +156,9 @@ Deno.serve(async (req) => {
           console.log("here");
           if (parsed.articles && Array.isArray(parsed.articles)) {
             console.log(parsed.articles);
-
-            const articlesToInsert = parsed.articles.map((article) => ({
-              ...article,
-              user_id: uid, // associate the article with the user based on the uid
-            }));
-            const { data, error } = await supabase.from('articles').insert(articlesToInsert);
+            const articlesWithUser = parsed.articles.map(a => ({ ...a, user_id }));
+            const { data, error } = await supabase.from('articles').insert(articlesWithUser);
+            //const { data, error } = await supabase.from('articles').insert(parsed.articles);
             if (error) {
               console.log(error.message);
             } else {
