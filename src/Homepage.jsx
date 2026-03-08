@@ -37,9 +37,11 @@ const Homepage = () => {
       let { data, error } = await supabase.from("articles").select("*");
       if (error) console.log(error.message);
       else setArticles(data);
+      console.log(data.headline)
     };
     fetchArticles();
   }, []);
+                    
   return (
     <div className="min-h-screen bg-teal-400 font-sans">
       <Header />
@@ -47,7 +49,8 @@ const Homepage = () => {
       {/* Body — 2/3 + 1/3 split */}
       <div className="flex gap-6 p-6">
         {/* Main Column — 2/3 */}
-        <div className="flex flex-col gap-4 w-2/3 overflow-y-auto max-h-[calc(100vh-120px)]">
+        <div className="flex flex-col gap-4 w-2/3">
+                        
           {articles.map((article, i) => (
             <NewsCard
               key={i}
@@ -57,8 +60,8 @@ const Homepage = () => {
               link={article.url}
             />
           ))}
-        </div>
 
+        </div>
         {/* Sidebar — 1/3 */}
         <div className="flex flex-col gap-4 w-1/3">
           {/* Streak */}

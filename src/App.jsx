@@ -8,6 +8,7 @@ import {
 
 import Homepage from "./Homepage";
 import LandingPage from "./LandingPage";
+import Profile from "./Profile";
 
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingPage username={username} />} />
         <Route path="/home" element={<Homepage />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
       {/*<div
         style={{ backgroundColor: "rgba(5, 150, 105, var(--tw-bg-opacity))" }}

@@ -21,21 +21,21 @@ const DropDown = () => {
 
       {open && (
         <div
-          className="w-48 absolute right-0 z-10 mt-2 origin-top-right bg-white shadow-[2px_2px_0px_rgba(0,0,0,1)] border-black border-2 divide-y divide-black"
+          className="w-48 absolute right-0 z-10 mt-2 origin-top-right bg-[#f5f0e0] shadow-[2px_2px_0px_rgba(0,0,0,1)] border-black border-2 divide-y divide-black"
           role="menu"
           aria-orientation="vertical"
           aria-labelledby="menu-button"
         >
           <div role="none">
             <button
-              onClick={() => navigate("/settings")}
-              className="block w-full text-left px-4 py-2 text-sm border-black border-b-2 hover:bg-[#B8FF9F] hover:font-medium"
+              onClick={() => navigate("/profile")}
+              className="block w-full text-left px-4 py-2 text-l border-black border-b-2 hover:bg-[#B8FF9F] hover:font-medium"
             >
               Profile
             </button>
             <button
               onClick={() => navigate("/login")}
-              className="block w-full text-left px-4 py-2 text-sm border-black border-b-2 hover:bg-[#B8FF9F] hover:font-medium"
+              className="block w-full text-left px-4 py-2 text-l border-black border-b-2 hover:bg-[#B8FF9F] hover:font-medium"
             >
               Settings
             </button>
