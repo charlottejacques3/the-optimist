@@ -27,12 +27,12 @@ Deno.serve(async (req) => {
         max_tokens: 1024,
         messages: [{
           role: "user",
-          content:`Please find an interesting, typically unknown historical event that occurred on this day in MM-DD format: ${dateString}.
+          content:`Please find an interesting, typically unknown historical event that occurred on this day in MM-DD format: ${dateString}. Please ensure the historical event is not negetive or controversial in nature. Examples of the type of event I'm looking for include: the discovery of a new species, the invention of a new technology, the founding of a city, the birth of an influential artist, etc.
         For the identified historical event, please provide the following information in raw JSON format ONLY. Never use markdown formatting, code blocks, or backticks.
         {
-          "event": <event name>, 
+          "name": <event name>, 
           "date_string": <the date of the event formatted as a text string (e.g. September 4th, 1950),
-          "date": <the date of the event formatted as a YYYY-MM-DD string>,
+          "date": <the date of the event formatted as a MM-DD string>,
           "summary": <3-4 sentence summary of the event and its significance>,
         }
         `}],

@@ -32,6 +32,8 @@ const Homepage = () => {
   const [profileOpen, setProfileOpen] = useState(false);
   const [factOpen, setFactOpen] = useState(false);
   const [articles, setArticles] = useState([]);
+  const [historicalFigure, setHistoricalFigure] = useState(null);
+  const [dayInHistory, setDayInHistory] = useState(null);
 const[loadingArticles,setLoadingArticles] = useState(true);
 const[articleError, setArticleError] = useState(null);
   const [claudeResponse, setClaudeResponse] = useState(null);
@@ -48,18 +50,76 @@ const[articleError, setArticleError] = useState(null);
     }
   };
 
-{/* const callClaude = async () => {
-    const { data, error } = await supabase.functions.invoke('historical_figure', {
-      // body: { "keywords": ["rescue", "women's rights", "climate", "community"] } ,
-    });
+
+
+  const getHistoricalFigure = async () => {
+    const { data, error } = await supabase.functions.invoke('historical_figure', {});
     if (error) {
       console.error("Error calling function:", error);
     } else {
       console.log(data);
+      return data;
     }
-  };*/}
+  };
+
+    const getDayInHistory = async () => {
+    const { data, error } = await supabase.functions.invoke('day_in_history', {});
+    if (error) {
+      console.error("Error calling function:", error);
+    } else {
+      console.log(data);
+      return data;
+    }
+  };
+  
+  
 
   useEffect(() => {
+    
+    const now = new Date();
+    const dateString = now.toISOString().substring(5, 10);
+    console.log("Current date string:", dateString);
+
+    const fetchHistoricalFigure = async () => {
+      let { data, error } = await supabase.from("historical_figures").select("*").eq("date", dateString).limit(1).single();
+      console.log("Supabase query result:", { data, error });
+      if (error) {
+        console.log(error.message);
+        if (error.code === "PGRST116") {
+          console.log("No historical figure found for today in the database.");
+          const fromClaude = await getDayInHistory();
+          if (fromClaude) {
+            setHistoricalFigure(fromClaude);
+          }
+        }
+      }
+      else if (data) {
+        setHistoricalFigure(data);
+      } else {
+        // console.log("No historical figure found for today.");
+      }
+    };
+
+    const fetchDayInHistory = async () => {
+      let { data, error } = await supabase.from("day_in_history").select("*").eq("date", dateString).limit(1).single();
+      console.log("Supabase query result:", { data, error });
+      if (error) {
+        console.log(error.message);
+        if (error.code === "PGRST116") {
+          console.log("No day in history found for today in the database.");
+          const fromClaude = await getDayInHistory();
+          if (fromClaude) {
+            setDayInHistory(fromClaude);
+          }
+        }
+      }
+      else if (data) {
+        setDayInHistory(data);
+      } else {
+        console.log("No day in history figure found for today.");
+      }
+    };
+    const link= 'https://en.wikipedia.org/wiki/Dancing_plague_of_1518'
     const loadArticles = async () => {
         setLoadingArticles(true);
         setArticleError(null);
@@ -107,13 +167,15 @@ const[articleError, setArticleError] = useState(null);
     setLoadingArticles(false);
 }
 };
+    
+    fetchHistoricalFigure();
+    fetchDayInHistory();
 loadArticles();
 },[]);
                     
   return (
     <div className="min-h-screen bg-teal-400 font-sans">
       <Header />
-      <button onClick={callClaude}>Call claude</button>
 
       {/* Body — 2/3 + 1/3 split */}
       <div className="flex gap-6 p-6">
@@ -142,61 +204,60 @@ loadArticles();
           </div>
 
           {/* Pink Card — opens modal */}
-          <button
-            onClick={() => setProfileOpen(true)}
-            className="bg-pink-400 border-4 cursor-pointer border-black rounded-2xl px-4 py-3 shadow-[6px_6px_0px_black] flex items-center gap-4 text-left hover:translate-y-[-2px] transition-transform"
-          ><img src={ada} alt= " dancing" className="w-14 h-14 object-cover border-2 border-black rounded-lg shrink-0"/>
-            <div>
-              <p className="font-bold text-black text-3xl">Ada Lovelace</p>
-            </div>
-          </button>
+          {historicalFigure && (
+            <button
+              onClick={() => setProfileOpen(true)}
+              className="bg-pink-400 border-4 cursor-pointer border-black rounded-2xl px-4 py-3 shadow-[6px_6px_0px_black] flex items-center gap-4 text-left hover:translate-y-[-2px] transition-transform"
+            ><img src={historicalFigure.image} alt= " dancing" className="w-14 h-14 object-cover border-2 border-black rounded-lg shrink-0"/>
+              <div>
+                <p className="font-bold text-black text-3xl">{historicalFigure.name}</p>
+              </div>
+            </button>)}
 
           {/* Weird Fact Card — opens modal */}
-          <button
-            onClick={() => setFactOpen(true)}
-            className=" border-4 border-black cursor-pointer rounded-2xl px-4 py-3 shadow-[6px_6px_0px_black] flex items-center gap-4 text-left hover:translate-y-[-2px] transition-transform"
-          ><img src={dancing} alt= " dancing" className="w-14 h-14 object-cover border-2 border-black rounded-lg shrink-0"/>
-            <p className="text-black font-bold text-3xl">Strange Historical Fact</p>
-            <p className="text-black text-xl">The Dancing Plague of 1518</p>
-          </button>
+          {dayInHistory && (
+            <button
+              onClick={() => setFactOpen(true)}
+              className=" border-4 border-black cursor-pointer rounded-2xl px-4 py-3 shadow-[6px_6px_0px_black] flex items-center gap-4 text-left hover:translate-y-[-2px] transition-transform"
+            ><img src={dayInHistory.image} alt= " dancing" className="w-14 h-14 object-cover border-2 border-black rounded-lg shrink-0"/>
+              <p className="text-black font-bold text-3xl">Today in History</p>
+            <p className="text-black text-xl">{dayInHistory.name}</p>
+          </button>)}
         </div>
       </div>
 {/* Profile Modal */}
       <Modal isOpen={profileOpen} onClose={() => setProfileOpen(false)}>
         {/* Image banner */}
-        <figure className="w-full h-60 border-black border-b-2">
+        {historicalFigure ? 
+        <><figure className="w-full h-60 border-black border-b-2">
           <div className="w-full h-full bg-pink-400 flex items-center justify-center">
-            <img src={ada} alt="Ada Lovelace" className="w-full border-2 h-full object-cover" />
+            <img src={historicalFigure.image} alt={historicalFigure.name} className="w-full border-2 h-full object-cover" />
           </div>
         </figure>
         <div className="px-6 py-5 text-left relative">
-          <p className="text-base mb-2 text-black-500">Ada Lovelace</p>
+          
+          <h1 className="text-[32px] mb-3 mt-5 font-bold leading-tight">{historicalFigure.name}</h1>
           <p className="text-xs mb-4 text-black-700 leading-relaxed">
-            Ada Lovelace (born December 10, 1815, Piccadilly Terrace, Middlesex [now in London], England—died November 27, 1852, Marylebone, London) was an English mathematician, an associate of Charles Babbage, for whose prototype of a digital computer she created a program. She has been called the first computer programmer. The second Tuesday of October is traditionally celebrated as Ada Lovelace Day, during which women’s contributions to science, technology, engineering, and mathematics are honored.
+            {historicalFigure.summary}
           </p>
-          <strong className="text-sm">View Full Profile</strong>
-        </div>
+        </div></> : <p className="text-center text-gray-500">Loading...</p>}
       </Modal>
 
       {/* Weird Fact Modal */}
       <Modal isOpen={factOpen} onClose={() => setFactOpen(false)}>
         {/* Image banner */}
+        { dayInHistory ?
+        <>
         <figure className="w-full h-36 border-black border-b-2">
-          <img src={dancing} alt="dancing" className="w-full border-2 h-full object-cover" />
+          <img src={dayInHistory.image} alt="dancing" className="w-full border-2 h-full object-cover" />
         </figure>
         <div className="px-6 py-5 text-left">
-          <p className="text-base mb-2 text-gray-500">Strange Historical Fact</p>
-          <h1 className="text-[32px] mb-3 font-bold leading-tight">The Dancing Plague of 1518</h1>
+          <h1 className="text-[32px] mt-5 mb-3 font-bold leading-tight">{dayInHistory.name}</h1>
           <p className="text-xs mb-4 text-gray-700 leading-relaxed line-clamp-5">
-            The dancing plague of 1518 was an event in which hundreds of citizens of Strasbourg
-            (then a free city within the Holy Roman Empire, now in France) danced uncontrollably
-            and apparently unwillingly for days on end. The mania lasted for about two months
-            before ending as mysteriously as it began.
+            {dayInHistory.summary}
           </p>
-          <a href="https://en.wikipedia.org/wiki/Dancing_plague_of_1518" target="_blank" rel="noreferrer">
-  <strong className="text-sm">Read More</strong>
-</a>
         </div>
+        </> : <p className="text-center text-gray-500">Loading...</p>}
       </Modal>
     </div>
   );

@@ -33,9 +33,8 @@ Deno.serve(async (req) => {
         {
           "name": <full name>, 
           "date_string": <their date of birth formatted as a text string (e.g. September 4th, 1950),
-          "date": <their date of birth formatted as a YYYY-MM-DD string>,
+          "date": <their birthday formatted as a MM-DD string>,
           "summary": <3-4 sentence summary of their life, accomplishments, and legacy>,
-          "image": <an URL pointing to an image of them>"
         }
         `}],
       })
